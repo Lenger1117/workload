@@ -45,6 +45,10 @@ class SystemMonitorUI:
         self.timer_label.pack(pady=10)
         self.timer_label.pack_forget()
 
+        # Кнопка для просмотра истории
+        self.view_history_button = tk.Button(self.root, text="Просмотреть историю", command=self.view_history)
+        self.view_history_button.pack(pady=10)
+
         self.update_metrics()
 
     def update_metrics(self):
@@ -91,3 +95,27 @@ class SystemMonitorUI:
             print(f"Интервал обновления установлен на {self.record_interval} секунд.")
         except ValueError as e:
             print(f"Ошибка: {e}")
+
+    def view_history(self):
+        records = self.db.get_last_five_records()
+
+        # Создаем новое окно для отображения истории
+        history_window = tk.Toplevel(self.root)
+        history_window.title("История записей")
+
+        if not records:
+            label = tk.Label(history_window, text="История пуста.")
+            label.pack(pady=20)
+            return
+
+        for record in records:
+            cpu_usage, ram_free, ram_total, disk_free, disk_total, timestamp = record
+            record_text = (
+                f"Время: {timestamp}\n"
+                f"ЦП: {cpu_usage:.1f}%\n"
+                f"ОЗУ: свободно {ram_free:.1f} ГБ / всего {ram_total:.1f} ГБ\n"
+                f"ПЗУ: свободно {disk_free:.1f} ГБ / всего {disk_total:.1f} ГБ\n"
+                "-----------------------------"
+            )
+            label = tk.Label(history_window, text=record_text, justify=tk.LEFT)
+            label.pack(pady=5)

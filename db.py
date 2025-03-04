@@ -26,6 +26,15 @@ class Database:
             VALUES (?, ?, ?, ?, ?)
         ''', (cpu_usage, ram_free, ram_total, disk_free, disk_total))
         self.conn.commit()
+    
+    def get_last_five_records(self):
+        self.cursor.execute('''
+            SELECT cpu_usage, ram_free, ram_total, disk_free, disk_total, timestamp
+            FROM system_metrics
+            ORDER BY id DESC
+            LIMIT 5
+        ''')
+        return self.cursor.fetchall()
 
     def close(self):
         self.conn.close()
